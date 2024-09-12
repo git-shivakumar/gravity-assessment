@@ -1,0 +1,53 @@
+pipeline {
+    environment {
+    imagename = "web"
+    jenkinsProject = 'webapp-frontend'
+  }
+    agent any
+
+    stages {
+        stage('git-checkout') {
+            steps {
+		checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/yashrpandit/calculator-webapp-frontend.git']]])
+
+            }
+        }
+        stage('Compile') {
+            steps {
+                echo 'compile the code based on app techstack'
+             }
+        }
+		
+		stage('Test') {
+            steps {
+                echo 'testing'
+             }
+        }
+		
+		stage('Build & Package') {
+            steps {
+                echo 'build artifactory code'
+             }
+        }
+		
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build --no-cache -t demo_app .'
+             }
+        }
+		
+		stage('Push Docker Image') {
+            steps {
+			  script {
+				sh "docker push shiva/dockerhub:latest"
+			  }
+            }
+        }
+		
+        stage('Deploy') {
+            steps {
+                sh "docker run -p 8001:8001 -d demo_app"
+             }
+        }
+    }
+}
