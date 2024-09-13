@@ -6,7 +6,7 @@ resource "aws_vpc" "gravity-vpc" {
  enable_dns_hostnames = true
  
  tags = {
-   Name = "Project VPC"
+   Name = "gravity-demo-vpc"
  }
 }
 

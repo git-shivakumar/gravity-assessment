@@ -6,41 +6,43 @@ pipeline {
     agent any
 
     stages {
+
         stage('git-checkout') {
             steps {
-		checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/yashrpandit/calculator-webapp-frontend.git']]])
+		checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git-creds', url: 'https://github.com/git-shivakumar/gravity-assessment.git']]])
 
             }
         }
         stage('Compile') {
             steps {
                 echo 'compile the code based on app techstack'
+		sh "mvn test"
              }
         }
 		
 		stage('Test') {
             steps {
                 echo 'testing'
+		sh "mvn test"
              }
         }
 		
 		stage('Build & Package') {
             steps {
                 echo 'build artifactory code'
+		sh "mvn package"
              }
         }
 		
         stage('Build Docker Image') {
             steps {
-                sh 'docker build --no-cache -t demo_app .'
+                sh 'docker build --no-cache -t demo_app:latest .'
              }
         }
 		
-		stage('Push Docker Image') {
+	stage('Push Docker Image') {
             steps {
-			  script {
-				sh "docker push shiva/dockerhub:latest"
-			  }
+		sh "docker push shiva/dockerhub:latest"
             }
         }
 		
